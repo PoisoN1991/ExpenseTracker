@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
     DEFAULT_FILTERS_STATE,
     DEFAULT_NUM_OF_TRANSACTIONS,
+    NOT_PAID,
 } from '../../constants';
 import { sortTransactionsByDate, translateMessage } from '../../utils';
 
@@ -14,6 +15,8 @@ import TrackerHeader from './TrackerHeader';
 import TrackerStatus from './TrackerStatus';
 import Transactions from './Transactions';
 
+const DEFAULT_USER_STATE = { name: '', color: '', id: '' };
+
 const ExpenseTracker = ({ isVerified, logOut }) => {
     const [isShownAllTransactions, setIsShownAllTransactions] = useState(false);
     const [filteredTransactions, setFilteredTransactions] = useState([]);
@@ -21,7 +24,7 @@ const ExpenseTracker = ({ isVerified, logOut }) => {
     const [isFilterApplied, setIsFilterApplied] = useState(false);
     const [messageText, setMessageText] = useState(null);
     const [isMenuShown, setIsMenuShown] = useState(false);
-    const [chosenUser, setChosenUser] = useState({ name: '', color: '' });
+    const [chosenUser, setChosenUser] = useState(DEFAULT_USER_STATE);
 
     const {
         dataError,
@@ -29,11 +32,20 @@ const ExpenseTracker = ({ isVerified, logOut }) => {
         successMessage,
         transactions,
         usersSettings,
+        constantExpenses,
+        filteredConstantExpense,
+        totalConstantExpensesToBePaid,
+        freeCashAvailable,
         addTransaction,
         resetMessages,
         sendVerificationEmail,
         setDataError,
+        addConstantExpense,
+        editConstantExpense,
+        deleteConstantExpense,
         addUserSettings,
+        doRegisterExpenseAsPaid,
+        payConstantExpenses,
     } = useData(isVerified);
 
     useEffect(() => {
@@ -91,6 +103,12 @@ const ExpenseTracker = ({ isVerified, logOut }) => {
                 chosenUser={chosenUser}
                 setChosenUser={setChosenUser}
                 handleSignOut={handleSignOut}
+                constantExpenses={constantExpenses}
+                addConstantExpense={addConstantExpense}
+                editConstantExpense={editConstantExpense}
+                deleteConstantExpense={deleteConstantExpense}
+                filteredConstantExpense={filteredConstantExpense}
+                doRegisterExpenseAsPaid={doRegisterExpenseAsPaid}
             />
 
             <TrackerHeader
@@ -101,6 +119,8 @@ const ExpenseTracker = ({ isVerified, logOut }) => {
                 shownTransactions={shownTransactions}
                 transactions={transactions}
                 setIsMenuShown={setIsMenuShown}
+                totalConstantExpensesToBePaid={totalConstantExpensesToBePaid}
+                freeCashAvailable={freeCashAvailable}
             />
 
             <AllTransactionsToggler
@@ -139,6 +159,8 @@ const ExpenseTracker = ({ isVerified, logOut }) => {
                 isDisabled={isLoading}
                 setError={setDataError}
                 chosenUser={chosenUser}
+                notPaidConstantExpenses={filteredConstantExpense[NOT_PAID]}
+                payConstantExpenses={payConstantExpenses}
             />
         </>
     );
